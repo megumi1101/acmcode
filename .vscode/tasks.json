@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cppbuild",
+            // 这里改为 build，对应 launch.json 中的 preLaunchTask
+            "label": "build", 
+            // 指向 WSL 内部的 g++
+            "command": "/usr/bin/g++", 
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "-std=c++23", 
+                "${file}",
+                "-o",
+                // 统一路径，去掉 .exe 后缀
+                "${fileDirname}/${fileBasenameNoExtension}" 
+            ],
+            "options": {
+                // 工作目录改为当前文件所在目录
+                "cwd": "${fileDirname}" 
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "WSL C++ 编译任务"
+        }
+    ]
+}

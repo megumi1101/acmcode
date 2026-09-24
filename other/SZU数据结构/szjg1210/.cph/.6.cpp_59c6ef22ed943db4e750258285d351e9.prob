@@ -1,0 +1,1 @@
+{"name":"Local: 6","url":"d:\\acmcode\\szjg1210\\6.cpp","tests":[{"id":1765366448558,"input":"2\n6 ABC00D\n24 ABCD0EF0000H00000000000I\n\n\n","output":"B 0\nD 0\nC 1\nA -1\nD 0\nB 1\nI 0\nH 1\nE 2\nF 0\nC 2\nA -2\n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\acmcode\\szjg1210\\6.cpp","group":"local","local":true}

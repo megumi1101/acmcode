@@ -1,0 +1,1 @@
+{"name":"Local: baoli","url":"d:\\acmcode\\0001 - duipai\\baoli.cpp","tests":[{"id":1753443268121,"input":"15\n1\n10\n11\n100\n101\n110\n111\n1000\n1001\n1010\n1011\n1100\n1101\n1110\n1111","output":"\n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\acmcode\\0001 - duipai\\baoli.cpp","group":"local","local":true}

@@ -1,0 +1,1 @@
+{"name":"Local: rrrr","url":"d:\\acmcode\\szjg1014\\rrrr.cpp","tests":[{"id":1760449629993,"input":"5\na\nbb\naa\nabaa\nabaaa\nabaaabaa\n","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\acmcode\\szjg1014\\rrrr.cpp","group":"local","local":true}

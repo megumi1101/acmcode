@@ -1,0 +1,1 @@
+{"name":"Local: 7","url":"d:\\acmcode\\szjg1105\\7.cpp","tests":[{"id":1762333830626,"input":"14 20\n25 -15\n-25 28\n8 49\n29 15\n-35 -2\n5 28\n27 -29\n-8 -28\n-20 -35\n-25 -20\n-13 29\n-30 15\n-35 40\n12 12","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\acmcode\\szjg1105\\7.cpp","group":"local","local":true}

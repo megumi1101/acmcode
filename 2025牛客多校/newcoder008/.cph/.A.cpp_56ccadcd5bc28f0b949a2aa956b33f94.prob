@@ -1,0 +1,1 @@
+{"name":"Local: A","url":"d:\\acmcode\\newcoder008\\A.cpp","tests":[{"id":1755324455500,"input":"6\n10101\n-10101\n-123321\n0\n-0\n-1\n","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\acmcode\\newcoder008\\A.cpp","group":"local","local":true}

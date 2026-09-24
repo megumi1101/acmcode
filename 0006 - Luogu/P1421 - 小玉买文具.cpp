@@ -1,0 +1,7 @@
+#include<cstdio>
+int x,y;
+int main()
+{
+	scanf("%d%d",&x,&y);
+	printf("%d",(10*x+y)/19);
+}

@@ -1,0 +1,1 @@
+{"name":"Local: 5","url":"d:\\acmcode\\szjg1126\\5.cpp","tests":[{"id":1764144552358,"input":"6\n22 33 55 66 11 44\n7\n11\n22\n33\n44\n55\n66\n77\n","output":"11 22 33 44 55 66 \n2\n1\n2\n4\n3\n4\n-1"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\acmcode\\szjg1126\\5.cpp","group":"local","local":true}

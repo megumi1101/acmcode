@@ -1,0 +1,1 @@
+{"name":"Local: 2","url":"d:\\acmcode\\szjg1014\\2.cpp","tests":[{"id":1760447814089,"input":"6\na\nab\nabc\nabcd\nabcda\nabcdab","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\acmcode\\szjg1014\\2.cpp","group":"local","local":true}

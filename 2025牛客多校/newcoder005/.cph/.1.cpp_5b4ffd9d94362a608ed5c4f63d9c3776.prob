@@ -1,0 +1,1 @@
+{"name":"Local: 1","url":"d:\\acmcode\\newcoder005\\1.cpp","tests":[{"id":1753769730094,"input":"3 3\n0 0 0\n0 0 0\n0 0 1","output":""},{"id":1753770469765,"input":"2 2\n1 0\n0 0","output":""},{"id":1753770482110,"input":"1 5\n0 1 0 0 0","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\acmcode\\newcoder005\\1.cpp","group":"local","local":true}

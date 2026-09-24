@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (WSL)",
+            "type": "cppdbg",
+            "request": "launch",
+            // 统一路径，去掉 .exe 后缀
+            "program": "${fileDirname}/${fileBasenameNoExtension}", 
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "internalConsoleOptions": "neverOpen",
+            "MIMode": "gdb",
+            // 指向 WSL 内部的 gdb
+            "miDebuggerPath": "/usr/bin/gdb",
+            // 与 tasks.json 中的 label 保持完全一致
+            "preLaunchTask": "build" 
+        }
+    ]
+}
