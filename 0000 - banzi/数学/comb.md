@@ -1,4 +1,5 @@
 ```cpp
+using ll = long long;
 #define int long long
 const int mod = 998244353, inf = 1e9;
 vector<int> fac, ifac, inv;
@@ -20,6 +21,7 @@ int C(int n, int m) {
 }
 
 
+using ll = long long;
 #define int long long
 const int mod = 998244353;
 // s[n][k]：n 个不同元素组成 k 个置换循环的方案数
@@ -33,6 +35,7 @@ void init(int n) {
 }
 
 
+using ll = long long;
 #define int long long
 const int mod = 998244353;
 // s[n][k]：n 个不同元素划分成 k 个非空、无标号集合的方案数

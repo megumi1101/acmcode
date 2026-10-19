@@ -17,3 +17,4 @@ bool has_negative_cycle(int s) {
     }
     return false;
 }
+```

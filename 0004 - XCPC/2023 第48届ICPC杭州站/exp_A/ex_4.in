@@ -1,0 +1,26 @@
+2
+11
+A A 1 accepted
+B B 1 accepted
+C C 2 accepted
+D D 2 accepted
+E E 2 accepted
+F F 2 accepted
+G G 2 accepted
+H H 2 accepted
+I I 2 accepted
+J J 2 accepted
+K K 2 accepted
+12
+A A 1 accepted
+A X 1 accepted
+K K 1 rejected
+B B 2 accepted
+C C 2 accepted
+D D 2 accepted
+E E 2 accepted
+F F 2 accepted
+G G 2 accepted
+H H 2 accepted
+I I 2 accepted
+J J 2 accepted

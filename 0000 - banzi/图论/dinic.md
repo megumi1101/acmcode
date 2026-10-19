@@ -1,37 +1,33 @@
+Dinic 求有向图的最大流：反复 **BFS 分层 → DFS 沿分层图增广**，直到源点无法到达汇点。
+
+下面是 C++17 模板，保留最大流的核心接口，使用连续的边编号管理反向边。点编号可用 `1..n`，也可用 `0..n-1`；要求 `s != t`，容量非负，容量和最大流均不超过 `ll` 的范围。
+
 ```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
 struct Dinic {
+    using ll = ll;
     struct Edge {
-        int to, rev;          // 反向边在 g[to] 中的下标
-        long long cap;        // 残量
-        Edge(int _to, int _rev, long long _cap) : to(_to), rev(_rev), cap(_cap) {}
+        int to;
+        ll cap;                       // 剩余容量，不是原始容量
     };
 
-    int n, s, t;            
-    vector<vector<Edge>> g;  
-    vector<int> dep, cur;     
-    vector<pair<int,int>> forward_pos; 
+    int s, t;
+    vector<Edge> e;
+    vector<vector<int>> g;             // g[u] 存从 u 出发的边编号
+    vector<int> dep, cur;              // 层数、当前弧下标
 
-    Dinic(int n, int s, int t) : n(n), s(s), t(t) {
-        g.assign(n + 1, {});
-        dep.assign(n + 1, 0);
-        cur.assign(n + 1, 0);
-    }
+    Dinic(int n, int s, int t)
+        : s(s), t(t), g(n + 1), dep(n + 1), cur(n + 1) {}
 
-    int add_edge(int u, int v, long long cap) {
-        // 可在调试时打开断言：
-        // assert(1 <= u && u <= n && 1 <= v && v <= n);
-        int iu = (int)g[u].size();
-        int iv = (int)g[v].size();
-        g[u].push_back(Edge(v, iv, cap));
-        g[v].push_back(Edge(u, iu, 0));
-        forward_pos.emplace_back(u, iu);
-        return (int)forward_pos.size() - 1; // 该前向边的 id
-    }
-
-    // 无向边（两向各 cap）
-    void add_undirected(int u, int v, long long cap) {
-        add_edge(u, v, cap);
-        add_edge(v, u, cap);
+    void add_edge(int u, int v, ll cap) {
+        int id = (int)e.size();
+        g[u].push_back(id);
+        e.push_back({v, cap});
+        g[v].push_back(id ^ 1);
+        e.push_back({u, 0});            // 正反边成对加入，编号互为 id ^ 1
     }
 
     bool bfs() {
@@ -40,65 +36,77 @@ struct Dinic {
         dep[s] = 0;
         q.push(s);
         while (!q.empty()) {
-            int u = q.front(); q.pop();
-            for (auto &e : g[u]) {
-                if (e.cap > 0 && dep[e.to] == -1) {
-                    dep[e.to] = dep[u] + 1;
-                    q.push(e.to);
-                    if (e.to == t) { /* 可选：不提前返回，稳定些 */ }
+            int u = q.front();
+            q.pop();
+            for (int id : g[u]) {
+                auto [v, cap] = e[id];
+                if (cap > 0 && dep[v] == -1) {
+                    dep[v] = dep[u] + 1;
+                    q.push(v);
                 }
             }
         }
         return dep[t] != -1;
     }
 
-    long long dfs(int u, long long f) {
-        if (u == t) return f;
-        for (int &i = cur[u]; i < (int)g[u].size(); ++i) { // 当前弧优化
-            Edge &e = g[u][i];
-            if (e.cap > 0 && dep[e.to] == dep[u] + 1) {
-                long long pushed = dfs(e.to, min(f, e.cap));
-                if (pushed > 0) {
-                    e.cap -= pushed;
-                    g[e.to][e.rev].cap += pushed;
-                    return pushed;
-                }
-            }
+    ll dfs(int u, ll limit) {          // 本次最多送 limit，返回实际送出的流量
+        if (u == t) return limit;
+        for (int &i = cur[u]; i < (int)g[u].size(); ++i) {
+            int id = g[u][i], v = e[id].to;
+            if (e[id].cap == 0 || dep[v] != dep[u] + 1) continue;
+            ll f = dfs(v, min(limit, e[id].cap));
+            if (f == 0) continue;
+            e[id].cap -= f;
+            e[id ^ 1].cap += f;        // 反向边允许后续撤回、改道
+            return f;                 // 成功时保留当前弧，下次可能还能走
         }
         return 0;
     }
 
-    long long maxflow(long long INF = (1LL<<60)) {
-        long long flow = 0;
+    ll maxflow() {
+        ll flow = 0;
         while (bfs()) {
-            fill(cur.begin(), cur.end(), 0);
-            while (long long pushed = dfs(s, INF)) flow += pushed;
+            fill(cur.begin(), cur.end(), 0); // 每次重新分层后重置当前弧
+            while (ll f = dfs(s, LLONG_MAX)) flow += f;
         }
         return flow;
     }
 
-    // 结束后：S 侧（从 s 在残量网络仍可达）的布尔标记（1..n）
+    // 求完最大流后调用：返回最小割源点侧的标记，1 表示属于 S
     vector<char> mincut_side() const {
-        vector<char> vis(n + 1, 0);
+        vector<char> vis(g.size(), 0);
         queue<int> q;
-        q.push(s); vis[s] = 1;
+        vis[s] = 1;
+        q.push(s);
         while (!q.empty()) {
-            int u = q.front(); q.pop();
-            for (auto &e : g[u]) if (e.cap > 0 && !vis[e.to]) {
-                vis[e.to] = 1;
-                q.push(e.to);
+            int u = q.front();
+            q.pop();
+            for (int id : g[u]) {
+                auto [v, cap] = e[id];
+                if (cap > 0 && !vis[v]) { // 只走残量网络中仍能通过的边
+                    vis[v] = 1;
+                    q.push(v);
+                }
             }
         }
         return vis;
     }
-
-    // 恢复第 id 条“前向边”的最终流量（调用 maxflow() 之后）
-    long long edge_flow(int id) const {
-        auto [u, idx] = forward_pos[id];
-        const Edge &fwd = g[u][idx];
-        const Edge &rev = g[fwd.to][fwd.rev];
-        // 反向边残量 = 该前向边的实际流量
-        return rev.cap;
-    }
 };
 ```
+
+**使用示例**：以下代码接在结构体后即可运行，输出 `5`。
+
+```cpp
+int main() {
+    Dinic mf(4, 1, 4);                 // 4 个点，源点 1，汇点 4
+    mf.add_edge(1, 2, 3);
+    mf.add_edge(1, 3, 2);
+    mf.add_edge(2, 3, 1);
+    mf.add_edge(2, 4, 2);
+    mf.add_edge(3, 4, 3);
+    cout << mf.maxflow() << '\n';
+    auto side = mf.mincut_side();      // 本例 S = {1}，T = {2, 3, 4}
+}
+```
+
+继续阅读：[费用流](费用流.md) 用最短路选择增广路；[上下界网络流](上下界网络流.md) 复用本模板处理边的流量下界、可行流和流量最值。

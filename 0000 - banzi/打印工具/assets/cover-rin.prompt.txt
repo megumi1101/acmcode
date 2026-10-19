@@ -1,0 +1,6 @@
+Tool: built-in image_gen
+Edit source: cover-characters.png
+Final asset: cover-rin.png
+Current placement: A4 cover, lower-left corner, 45 mm tall (1.5 times the original 30 mm).
+
+Use case: precise-object-edit. Edit target: the supplied transparent monochrome manga illustration. Keep ONLY Rin Tohsaka, the leftmost girl with twin tails, large hair ribbons, and a cross emblem on her high-collared top. Completely remove the middle and right girls. Preserve Rin's recognizable face, hairstyle, ribbons, expression, upper-body pose, outfit, and existing delicate black ink and screentone rendering. Complete only the parts of Rin's right shoulder or hair that were hidden by the adjacent person. Center this single waist-up character on a compact portrait canvas with a small transparent margin; do not retain the empty space from the removed people. This is an isolated tiny corner illustration for a book cover, printed about 30 mm tall. Make clean thin black contours and neutral grey screentone legible at small size. Strict monochrome black, white and neutral grey, no chromatic tint. Preserve actual transparency outside the figure. One person only. No other figures, background, props, frame, symbols, lettering, logo or watermark.

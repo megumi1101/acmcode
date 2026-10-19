@@ -1,6 +1,10 @@
-```cpp
-#define int long long
+### FWT（OR / AND / XOR 卷积）
 
+求 $c_k=\sum_{i\circ j=k}a_i b_j$，其中 $\circ$ 为按位 OR、AND 或 XOR。`op=0/1/2` 分别对应三种运算；`f=1/-1` 表示正/逆变换。长度补到不小于两个输入长度的最小二次幂，时间 $O(N\log N)$、空间 $O(N)$。
+
+`FWT_Mod` 默认模数 `998244353`，输入系数先归一化到 `[0,mod)`；XOR 要求模数为奇数，模数取常见的 32 位正数以保证乘法不溢出。`FWT_Raw` 不取模，XOR 逆变换中的除法恰整除；所有中间结果须在 `int` 范围内（公共头已设 `int=ll`）。单独调用 `transform` 时，数组非空且长度为二次幂。
+
+```cpp
 struct FWT_Mod {
     int mod, inv2;
     FWT_Mod(int m = 998244353) : mod(m), inv2((m + 1) / 2) {}
@@ -63,4 +67,9 @@ struct FWT_Raw {
         return a;
     }
 };
+```
+
+```cpp
+FWT_Mod fwt;
+auto c = fwt.conv({1, 2}, {3, 4}, 2); // XOR: {11, 10}
 ```

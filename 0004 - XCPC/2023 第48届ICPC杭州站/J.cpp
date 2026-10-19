@@ -1,92 +1,64 @@
-#include <bits/stdc++.h>
- 
-#define int long long
- 
+#include<bits/stdc++.h>
 using namespace std;
- 
-void sol() {
-    int n, q;
-    cin >> n >> q;
-    int mxV = sqrt(n);
- 
- 
-    vector<char> issqr(n + 1);
-    for (int x = 1; x <= mxV; x++) {
-        issqr[x * x] = 1;
+int T,rep,n;
+void ask(int x,int y)
+{
+    cout<<"? "<<x<<" "<<y<<endl;
+    cin>>rep;
+}
+void sol()
+{
+    cin>>n;
+    int x=0,y=0;
+    for (int i=1;i<=n;i+=2)
+    {
+        int t=i+1;
+        if(i==n) t=n-1;
+        ask(i,t);
+        if(rep==1) x=i,y=t;
     }
- 
-    vector<char> vis(n + 1);
-    for (int x = 1; x <= mxV; x++) {
-        for (int y = 1; y <= mxV; y++) {
-            if (x * x + y * y <= n) {
-                vis[x * x + y * y] = 1;
-            }
-        }
+    if(x==0)
+    {
+        cout<<"! "<<1<<endl;
+        return;
     }
- 
-    vector vis2(mxV + 1, vector<char>(n + 1));
-    for (int x = 1; x <= mxV; x++) {
-        for (int y = 1; y < x; y++) {
-            vis2[x][x * x - y * y] = 1;
-        }
-        for (int i = 1; i <= n; i++) {
-            vis2[x][i] |= vis2[x - 1][i];
-        }
-    }
- 
-    auto check2 = [&](int a, int b) -> bool {
-        if (a > b) swap(a, b);
-        int x = b - a;
-        int dis = sqrt(max(n - a, b - 1));
-        if (vis[x] || vis2[dis][x]) return 1;
-        return 0;
-    };
- 
-    while (q--) {
-        int a, b;
-        cin >> a >> b;
-        int x = b - a;
- 
-        if (issqr[x]) {
-            cout << "1\n";
-            continue;
-        }
- 
-        if (check2(a, b)) {
-            cout << "2\n";
-            continue;
-        }
- 
+    int t1=0,t2=0;
+    for (int i=1;i<=n;i++)
+        if(i!=x&&i!=y)
         {
-            bool fg = 0;
-            for (int i = 1; i <= mxV; i++) {
-                if (a - i * i >= 1) {
-                    if (check2(a - i * i, b)) {
-                        fg = 1;
-                        break;
-                    }
-                }
-                if (a + i * i <= n) {
-                    if (check2(a + i * i, b)) {
-                        fg = 1;
-                        break;
-                    }
-                }
-            }
-            if (fg) {
-                cout << "3\n";
-                continue;
-            }
+            t1=i;
+            break;
         }
- 
-        cout << "4\n";
+    for (int i=1;i<=n;i++)
+        if(i!=x&&i!=y&&i!=t1)
+        {
+            t2=i;
+            break;
+        }
+    ask(x,t1);
+    if(rep==1)
+    {
+        ask(x,t2);
+        if(rep==1) cout<<"! 2"<<endl;
+        else cout<<"! 1"<<endl;
+    }
+    else
+    {
+        ask(y,t1);
+        if(rep==1)
+        {
+            ask(y,t2);
+            if(rep==0) cout<<"! 1"<<endl;
+            else cout<<"! 2"<<endl;
+        }
+        else cout<<"! 1"<<endl;
     }
 }
- 
-signed main() {
+int main()
+{
     ios::sync_with_stdio(false);
-    cin.tie(0);
-    int t;
-    cin >> t;
-    while (t--) sol();
+    cin.tie(0),cout.tie(0);
+    cin>>T;
+    while (T--) sol();
+    return 0;
 }

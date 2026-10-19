@@ -24,6 +24,7 @@
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 #define int long long
 namespace NTT {
 

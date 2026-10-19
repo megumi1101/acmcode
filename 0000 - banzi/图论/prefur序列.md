@@ -1,130 +1,171 @@
-**Prufer 序列**是图论里的一种经典编码方法，用来唯一表示一棵带标号的树。下面我给你分几个部分解释：
+# Prüfer 序列
 
----
 
-## 1. 定义
-
-给定一棵 **n 个节点的带标号树（顶点编号为 1…n）**，其 **Prufer 序列** 是一个长度为 `n-2` 的序列，元素来自节点编号集合。
-
----
-
-## 2. 构造方法（树 → Prufer 序列）
-
-循环 `n-2` 次，每次操作：
-
-1. 找到当前树中 **度数为 1 的最小编号节点 u**。
-2. 记录与 `u` 相连的那个节点 `v`，把 `v` 加入 Prufer 序列。
-3. 从树中删除节点 `u`。
-
-最终得到的长度 `n-2` 序列就是该树的 **Prufer 编码**。
-
----
-
-### 示例
-
-树边集合：
-
-```
-1—2, 2—3, 2—4, 4—5
-```
-
-步骤：
-
-* 度数为 1 的最小点是 1，删去它，记录邻居 2 → \[2]
-* 度数为 1 的最小点是 3，删去它，记录邻居 2 → \[2,2]
-* 度数为 1 的最小点是 2，删去它，记录邻居 4 → \[2,2,4]
-
-所以 Prufer 序列是 **\[2,2,4]**。
-
----
-
-## 3. 逆过程（Prufer 序列 → 树）
-
-已知一条长度为 `n-2` 的序列 `P`：
-
-1. 初始化一个多重集 `S`，包含所有顶点 `1…n`。
-2. 对于序列 `P`，统计每个顶点出现的次数（记为 `cnt`）。
-3. 循环序列：
-
-   * 取 `S` 中 **最小编号且 cnt=0** 的顶点 `u`。
-   * 取当前序列中的元素 `v`，连边 `(u,v)`。
-   * 删除 `u`，并让 `cnt[v]--`。
-4. 最后剩下两个点，连边即可。
-
----
-
-### 示例
-
-序列 \[2,2,4]，n=5：
-
-* cnt(2)=2，cnt(4)=1，其他=0，S={1,2,3,4,5}
-* 取最小无 cnt 的点 1，连 (1,2)，cnt(2)=1
-* 取最小无 cnt 的点 3，连 (3,2)，cnt(2)=0
-* 取最小无 cnt 的点 2，连 (2,4)，cnt(4)=0
-* 最后剩下 {4,5}，连 (4,5)
-
-还原出的树边正好是 {1-2,2-3,2-4,4-5}。
-
----
-
-## 4. 性质
-
-* **一一对应**：n 个点的带标号树 ↔ 长度 n-2 的 Prufer 序列。
-* **数量验证**：序列有 `n^(n-2)` 种，正好是 Cayley 定理的结果：n 个点的树有 `n^(n-2)` 棵。
-* **度数关系**：在 Prufer 序列中，某个点出现的次数 = 该点度数 - 1。
-
----
-
-## 5. 代码实现 (C++)
+C++17，树的点编号为 `1..n`，序列使用普通 `vector` 的 `0..n-3` 下标。以下默认 `n >= 2`；单点树没有通常意义下长度为 `n-2` 的编码，需单独处理。
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
+#define int long long
+```
 
-// 树转 Prufer 序列
-vector<int> tree_to_prufer(int n, vector<pair<int,int>> edges) {
-    vector<int> deg(n+1, 0);
-    vector<vector<int>> g(n+1);
-    for (auto [u,v]: edges) {
-        g[u].push_back(v);
-        g[v].push_back(u);
-        deg[u]++; deg[v]++;
+## 1. 树变序列
+
+每次删除编号最小的叶子，把它唯一的邻居加入序列，重复 `n-2` 次。比如边为 `1-2、2-3、2-4、4-5`：依次删去 `1、3、2`，记录 `2、2、4`。
+
+先用 `set` 维护叶子，便于理解。每个点的邻接表只在删除它时扫描一次，总扫描量为 `O(n)`，集合操作使总时间为 `O(n log n)`。
+
+```cpp
+vector<int> encode_set(const vector<vector<int>> &ed) {
+    int n = (int)ed.size() - 1;
+    vector<int> deg(n + 1), p;
+    set<int> leaf;
+    for (int i = 1; i <= n; i++) {
+        deg[i] = ed[i].size();
+        if (deg[i] == 1) leaf.insert(i);
     }
-    set<int> leaves;
-    for (int i=1;i<=n;i++) if (deg[i]==1) leaves.insert(i);
-
-    vector<int> prufer;
-    for (int i=0;i<n-2;i++) {
-        int leaf = *leaves.begin(); // 度数为1的最小点
-        leaves.erase(leaves.begin());
-        int neighbor;
-        for (int v: g[leaf]) if (deg[v]>0) neighbor=v;
-        prufer.push_back(neighbor);
-        deg[leaf]--; deg[neighbor]--;
-        if (deg[neighbor]==1) leaves.insert(neighbor);
+    for (int i = 0; i < n - 2; i++) {
+        int u = *leaf.begin();
+        leaf.erase(leaf.begin());
+        deg[u] = 0;
+        for (int v : ed[u]) {
+            if (!deg[v]) continue;
+            p.push_back(v);
+            if (--deg[v] == 1) leaf.insert(v);
+            break;
+        }
     }
-    return prufer;
-}
-
-// Prufer 序列转树
-vector<pair<int,int>> prufer_to_tree(int n, vector<int> prufer) {
-    vector<int> deg(n+1,1);
-    for (int x: prufer) deg[x]++;
-    set<int> leaves;
-    for (int i=1;i<=n;i++) if (deg[i]==1) leaves.insert(i);
-
-    vector<pair<int,int>> edges;
-    for (int x: prufer) {
-        int leaf = *leaves.begin();
-        leaves.erase(leaves.begin());
-        edges.push_back({leaf,x});
-        if (--deg[x]==1) leaves.insert(x);
-    }
-    int u=*leaves.begin(); leaves.erase(leaves.begin());
-    int v=*leaves.begin(); leaves.erase(leaves.begin());
-    edges.push_back({u,v});
-    return edges;
+    return p;
 }
 ```
 
+## 2. 线性编码
 
+删一个叶子最多产生一个新叶子。维护只向右走的扫描指针 `pos`，以及本轮真正要删的叶子 `u`：
+
+- 如果新叶子 `v < pos`，它就是下一轮最小叶子，直接令 `u=v`，**不回退 `pos`**。
+- 否则把 `pos` 向右移到下一个度数为 `1` 的点，令 `u=pos`。
+
+`pos` 总共只扫一遍，另外每轮只处理一个点，故总时间 `O(n)`。
+
+为了直接知道 `u` 剩余的邻居，把原树以最大编号 `n` 为根，预处理 `fa`。`n` 一定留到最后：剩余点不少于三个时，若 `n` 是叶子，必然还有编号更小的叶子；所以删点过程不会先删掉还带孩子的父亲，删除 `u` 时唯一邻居就是 `fa[u]`。
+
+```cpp
+vector<int> encode(const vector<vector<int>> &ed) {
+    int n = (int)ed.size() - 1;
+    vector<int> fa(n + 1), deg(n + 1), p;
+    auto dfs = [&](auto &&self, int u, int f) -> void {
+        fa[u] = f;
+        deg[u] = ed[u].size();
+        for (int v : ed[u]) if (v != f) self(self, v, u);
+    };
+    dfs(dfs, n, 0);
+    int pos = 1;
+    while (deg[pos] != 1) pos++;
+    int u = pos;
+    for (int i = 0; i < n - 2; i++) {
+        int v = fa[u];
+        p.push_back(v);
+        deg[u] = 0;
+        if (--deg[v] == 1 && v < pos) {
+            u = v;
+        } else {
+            do { pos++; } while (deg[pos] != 1);
+            u = pos;
+        }
+    }
+    return p;
+}
+```
+
+## 3. 性质与解码
+
+一个点每失去一个相邻叶子，就在序列里出现一次；它自己被删除或成为最后两个点时，还剩一条边。因此：
+
+$$
+\deg(u)=1+\text{序列中 }u\text{ 的出现次数}.
+$$
+
+从没出现在序列里的点恰好是原树的叶子。根据这个式子恢复初始度数，再依次取最小叶子 `u`，与当前序列元素 `v` 连边，同时减度数。最后两个点连边，其中一个必然是 `n`。
+
+下面仍用单调扫描指针，时间与额外空间都是 `O(n)`。若想写集合版，和 `encode_set` 一样维护度数为 `1` 的点即可。
+
+```cpp
+vector<pair<int, int>> decode(const vector<int> &p) {
+    int n = (int)p.size() + 2;
+    vector<int> deg(n + 1, 1);
+    for (int x : p) deg[x]++;
+    int pos = 1;
+    while (deg[pos] != 1) pos++;
+    int u = pos;
+    vector<pair<int, int>> e;
+    for (int v : p) {
+        e.emplace_back(u, v);
+        deg[u] = 0;
+        if (--deg[v] == 1 && v < pos) {
+            u = v;
+        } else {
+            do { pos++; } while (deg[pos] != 1);
+            u = pos;
+        }
+    }
+    e.emplace_back(u, n);
+    return e;
+}
+```
+
+合法输入要求序列的每个值都在 `1..p.size()+2`。`n=2` 时序列为空，编码直接返回空数组，解码返回边 `(1,2)`。
+
+调用示例（放在 `signed main()` 中）：
+
+```cpp
+int n = 5;
+auto ed = vector(n + 1, vector<int>{});
+vector<pair<int, int>> e = {{1, 2}, {2, 3}, {2, 4}, {4, 5}};
+for (auto [u, v] : e) {
+    ed[u].push_back(v);
+    ed[v].push_back(u);
+}
+auto p = encode(ed); // {2, 2, 4}
+auto edges = decode(p);
+for (auto [u, v] : edges) cout << u << ' ' << v << '\n';
+```
+
+序列唯一确定一棵带标号无根树，编码和解码互为逆过程。输出边的顺序、每条边两个端点的顺序不影响是否为同一棵树。
+
+## 4. Cayley 公式与度数计数
+
+`n >= 2` 时，每个长度为 `n-2`、值域为 `1..n` 的序列都能解出一棵树，所以 `n` 个带标号点的无根树有：
+
+$$
+n^{n-2}.
+$$
+
+若另选一个根，乘 `n` 得 `n^{n-1}`；指定根则不额外乘。`n=1` 的树数单独记为 `1`。
+
+指定每个点的度数 `d[i]` 时，先检查所有 `d[i] >= 1` 且 `sum(d)=2n-2`，否则无解。每个点在序列中必须出现 `d[i]-1` 次，因此方案数为多重集排列数：
+
+$$
+\frac{(n-2)!}{\prod_{i=1}^{n}(d_i-1)!}.
+$$
+
+例如 `n=5`，度数为 `1,3,1,2,1`，序列必须含两个 `2` 和一个 `4`，共有 `3` 棵树。取模计算可以接 [组合数学板子](../数学/组合数学板子.md) 的阶乘、逆阶乘；用逆阶乘时须满足相应模数和阶乘可逆条件。
+
+## 5. 加最少的边使图连通
+
+原无向图有 `k` 个连通块，大小为 `s[1..k]`，总点数为 `n`。恰好加 `k-1` 条边使图连通，缩点后新增边必须是一棵树。
+
+固定缩点树的度数 `d[i]` 后，第 `i` 块每条关联边都可以独立选择块内端点，有 `s[i]^d[i]` 种。把其中一个 `s[i]` 提到外面，剩下的指数 `d[i]-1` 正好是 Prüfer 序列出现次数。序列每一位都可以贡献任意一块的大小，所以：
+
+$$
+\sum_{\text{缩点树}}\prod_i s_i^{d_i}
+=\left(\prod_i s_i\right)\left(\sum_i s_i\right)^{k-2}
+=n^{k-2}\prod_i s_i,\qquad k\ge 2.
+$$
+
+`k=1` 时已经连通，不加边只有 `1` 种方案，不能直接代入负指数。这里只计新增边集合，若题目区分加边的先后顺序，再乘 `(k-1)!`。
+
+练习：[Luogu P6086 Prüfer 序列](https://www.luogu.com.cn/problem/P6086)。该题规模很大，输入已经给出以 `n` 为根的父亲时，可直接复用 `fa` 并统计度数，省去邻接表与遍历；千万级数据还应把编号、父亲、度数改用 32 位存储，只把异或答案中的乘法提升到 64 位，不能照搬本篇所有数组都为 64 位的写法。
+
+参考：[OI Wiki Prüfer 序列及其贡献者](https://oi-wiki.org/graph/prufer/)（[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) / [SATA](https://github.com/zTrix/sata-license)）。
