@@ -1,7 +1,3 @@
-// QOJ user: xbbbz
-// Contest: 2024 Á¨?9Â±äICPCÂçó‰∫¨Á´?// Problem: #9574. Strips (9574)
-// Submission: https://qoj.ac/submission/1538111
-// Language: C++14
 
 #include<bits/stdc++.h>
 using namespace std;
@@ -73,4 +69,3 @@ int main()
 2
 
 */
-</code>

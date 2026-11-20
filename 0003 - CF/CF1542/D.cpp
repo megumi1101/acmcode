@@ -35,7 +35,7 @@ signed main() {
                     (nf[max(j - 1, 0LL)] += f[j]) %= mod;
                 }
             } else if (a[i] <= x) {
-                for (int j = 0; j <= n; j++) {
+                for (int j = 0; j + 1 <= n; j++) {
                     (nf[j + 1] += f[j]) %= mod;
                 }
             } else {
@@ -54,7 +54,7 @@ signed main() {
                     (nf[max(j - 1, 0LL)] += f[j]) %= mod;
                 }
             } else if (a[i] < x) {
-                for (int j = 0; j <= n; j++) {
+                for (int j = 0; j + 1 <= n; j++) {
                     (nf[j + 1] += f[j]) %= mod;
                 }
             } else {

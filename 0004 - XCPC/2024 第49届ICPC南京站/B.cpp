@@ -1,7 +1,3 @@
-// QOJ user: xbbbz
-// Contest: 2024 ç¬?9å±ŠICPCå—äº¬ç«?// Problem: #9565. Birthday Gift (9565)
-// Submission: https://qoj.ac/submission/1539051
-// Language: C++14
 
 #include<bits/stdc++.h>
 using namespace std;
@@ -35,4 +31,3 @@ int main()
     }
     return 0;
 }
-</code>
